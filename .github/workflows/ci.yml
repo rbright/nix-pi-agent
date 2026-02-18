@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Install just
+        uses: taiki-e/install-action@just
+
+      - name: Format check (Nix)
+        run: just fmt-check
+
+      - name: Lint
+        run: just lint
+
+      - name: Flake checks
+        run: nix flake check --all-systems path:.
+
+      - name: Build package
+        run: just build
+
+      - name: Run pi --help
+        run: nix run 'path:.#pi-agent' -- --help

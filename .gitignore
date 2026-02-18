@@ -1,0 +1,8 @@
+# Nix
+result
+.direnv/
+
+# Local agent/runtime artifacts
+.pi/
+PLAN.md
+SESSION.md

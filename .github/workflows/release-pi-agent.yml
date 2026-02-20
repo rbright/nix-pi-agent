@@ -1,0 +1,145 @@
+name: Release pi-agent package
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - package.nix
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-pi-agent-main
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect packaged version change
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          extract_version() {
+            perl -nE 'say $1 and exit if /version = "([^"]+)";/'
+          }
+
+          before_sha="${{ github.event.before }}"
+          current_version="$(extract_version < package.nix)"
+          previous_version=""
+
+          if [[ -n "${before_sha}" ]] && git cat-file -e "${before_sha}^{commit}" 2>/dev/null; then
+            previous_version="$(git show "${before_sha}:package.nix" | extract_version || true)"
+          fi
+
+          if [[ -z "${current_version}" ]]; then
+            echo "Failed to read version from package.nix" >&2
+            exit 1
+          fi
+
+          echo "current_version=${current_version}" >> "$GITHUB_OUTPUT"
+          echo "previous_version=${previous_version}" >> "$GITHUB_OUTPUT"
+
+          if [[ -n "${previous_version}" && "${previous_version}" == "${current_version}" ]]; then
+            echo "release_required=false" >> "$GITHUB_OUTPUT"
+            echo "No release required (version unchanged at ${current_version})."
+            exit 0
+          fi
+
+          echo "release_required=true" >> "$GITHUB_OUTPUT"
+
+          if [[ -n "${previous_version}" ]]; then
+            echo "Release required: ${previous_version} -> ${current_version}"
+          else
+            echo "Release required for ${current_version} (previous version unavailable)."
+          fi
+
+      - name: Check for existing release
+        if: steps.detect.outputs.release_required == 'true'
+        id: existing
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = `v${{ steps.detect.outputs.current_version }}`;
+
+            try {
+              const response = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag,
+              });
+
+              core.setOutput('exists', 'true');
+              core.setOutput('url', response.data.html_url);
+              core.info(`Release already exists for ${tag}: ${response.data.html_url}`);
+            } catch (error) {
+              if (error.status === 404) {
+                core.setOutput('exists', 'false');
+                core.info(`No release exists yet for ${tag}.`);
+              } else {
+                throw error;
+              }
+            }
+
+      - name: Create GitHub release
+        if: steps.detect.outputs.release_required == 'true' && steps.existing.outputs.exists == 'false'
+        id: create
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = '${{ steps.detect.outputs.current_version }}';
+            const previous = '${{ steps.detect.outputs.previous_version }}';
+            const tag = `v${version}`;
+
+            const body = [
+              'Automated release generated after a `package.nix` version bump on `main`.',
+              '',
+              previous
+                ? `- Previous packaged version: \`v${previous}\``
+                : '- Previous packaged version: _(not available)_',
+              `- New packaged version: \`${tag}\``,
+            ].join('\n');
+
+            const release = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              target_commitish: context.sha,
+              name: `pi-agent ${tag}`,
+              body,
+              generate_release_notes: true,
+              draft: false,
+              prerelease: false,
+            });
+
+            core.setOutput('url', release.data.html_url);
+            core.info(`Created release ${release.data.html_url}`);
+
+      - name: Summarize result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ steps.detect.outputs.release_required }}" != "true" ]]; then
+            echo "No release created (version unchanged)."
+            exit 0
+          fi
+
+          if [[ "${{ steps.existing.outputs.exists }}" == "true" ]]; then
+            echo "Release already existed: ${{ steps.existing.outputs.url }}"
+            exit 0
+          fi
+
+          echo "Release created: ${{ steps.create.outputs.url }}"

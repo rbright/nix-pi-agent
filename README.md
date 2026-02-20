@@ -11,6 +11,7 @@ Standalone Nix flake packaging for `pi` (from
 - Nix app output: `.#pi-agent`
 - Scripted updater for version/source/npm hash pin refresh
 - Scheduled GitHub Actions updater that opens auto-mergeable PRs
+- Automated GitHub release creation on `pi-agent` version bumps
 - Local quality gate (`just`) and GitHub Actions CI
 
 ## Quickstart
@@ -92,6 +93,17 @@ Manual trigger:
 
 - Actions → **Update pi-agent package** → **Run workflow**
 - Optional input: `version` (accepts `0.x.y` or `v0.x.y`)
+
+## Automated GitHub releases
+
+Workflow: `.github/workflows/release-pi-agent.yml`
+
+- Runs on pushes to `main` when `package.nix` changes.
+- Compares previous and current `package.nix` `version` values.
+- Creates a GitHub release + tag (`v<version>`) only when the packaged version changes.
+- Skips docs-only merges and other changes that do not modify `package.nix` version.
+
+No extra secret is required; it uses the workflow `GITHUB_TOKEN` with `contents: write`.
 
 ## Linting and checks
 

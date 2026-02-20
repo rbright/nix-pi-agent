@@ -116,7 +116,7 @@ jobs:
               repo: context.repo.repo,
               tag_name: tag,
               target_commitish: context.sha,
-              name: `pi-agent ${tag}`,
+              name: tag,
               body,
               generate_release_notes: true,
               draft: false,

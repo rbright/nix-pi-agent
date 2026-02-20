@@ -10,6 +10,7 @@ Standalone Nix flake packaging for `pi` (from
 - Nix package: `pi-agent` (binary: `pi`)
 - Nix app output: `.#pi-agent`
 - Scripted updater for version/source/npm hash pin refresh
+- Scheduled GitHub Actions updater that opens auto-mergeable PRs
 - Local quality gate (`just`) and GitHub Actions CI
 
 ## Quickstart
@@ -67,6 +68,30 @@ Check script usage:
 ```sh
 ./scripts/update-package.sh --help
 ```
+
+## Automated GitHub updates
+
+Workflow: `.github/workflows/update-pi-agent.yml`
+
+- Runs every 6 hours and on manual dispatch.
+- Detects the latest stable upstream tag from `badlogic/pi-mono`.
+- If newer than `package.nix`, runs `scripts/update-package.sh` and opens/updates a PR.
+- Enables auto-merge (`squash`) for that PR.
+
+### One-time repository setup
+
+1. Add repo secret `PI_AGENT_UPDATER_TOKEN` (fine-grained PAT scoped to this repo):
+   - **Contents**: Read and write
+   - **Pull requests**: Read and write
+2. In repository settings → **Actions → General**:
+   - Set workflow permissions to **Read and write permissions**.
+   - Enable **Allow GitHub Actions to create and approve pull requests**.
+3. Ensure branch protection/required checks allow auto-merge after CI passes.
+
+Manual trigger:
+
+- Actions → **Update pi-agent package** → **Run workflow**
+- Optional input: `version` (accepts `0.x.y` or `v0.x.y`)
 
 ## Linting and checks
 

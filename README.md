@@ -100,7 +100,7 @@ Workflow: `.github/workflows/release-pi-agent.yml`
 
 - Runs on pushes to `main` when `package.nix` changes.
 - Compares previous and current `package.nix` `version` values.
-- Creates a GitHub release + tag (`v<version>`) only when the packaged version changes.
+- Creates a GitHub release + tag named `v<version>` only when the packaged version changes.
 - Skips docs-only merges and other changes that do not modify `package.nix` version.
 
 No extra secret is required; it uses the workflow `GITHUB_TOKEN` with `contents: write`.

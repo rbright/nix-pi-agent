@@ -13,7 +13,7 @@
 }:
 buildNpmPackage (finalAttrs: {
   pname = "pi-agent";
-  version = "0.67.3";
+  version = "0.67.5";
 
   nodejs = nodejs_22;
 
@@ -21,10 +21,10 @@ buildNpmPackage (finalAttrs: {
     owner = "badlogic";
     repo = "pi-mono";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-2hSf1X42sH5jhVKCiZM/EIEfQae2mFUX6FGVM/vgtPc=";
+    hash = "sha256-Pw2f/6rKGWzmSdswungerrGrR6i9tUVFNiA4xaNygsQ=";
   };
 
-  npmDepsHash = "sha256-3xFxY0iKiwjM0psijzdSqed5UOjIAOyWPwQ15fqfc4I=";
+  npmDepsHash = "sha256-L53UEVQNsLoSkmP9L9AZQ74iThdMFBgtnLaXqZHqBRw=";
   npmWorkspace = "packages/coding-agent";
   npmFlags = [ "--legacy-peer-deps" ];
   makeCacheWritable = true;

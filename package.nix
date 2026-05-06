@@ -60,6 +60,6 @@ buildNpmPackage (finalAttrs: {
     homepage = "https://github.com/badlogic/pi-mono";
     license = lib.licenses.mit;
     mainProgram = "pi";
-    platforms = lib.platforms.linux;
+    platforms = lib.platforms.linux ++ lib.platforms.darwin;
   };
 })

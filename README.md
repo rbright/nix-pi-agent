@@ -9,6 +9,7 @@ Standalone Nix flake packaging for `pi` (from
 
 - Nix package: `pi-agent` (binary: `pi`)
 - Nix app output: `.#pi-agent`
+- Supported systems: Linux and macOS on `x86_64` and `aarch64`
 - Scripted updater for version/source/npm hash pin refresh
 - Scheduled GitHub Actions updater that opens auto-mergeable PRs
 - Automated GitHub release creation on `pi-agent` version bumps
@@ -32,6 +33,9 @@ just run --help
 ```sh
 nix build -L 'path:.#pi-agent'
 nix run 'path:.#pi-agent' -- --help
+
+# From GitHub, including on macOS
+nix run 'github:rbright/nix-pi-agent#pi-agent' -- --help
 ```
 
 Success criteria:

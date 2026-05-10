@@ -63,6 +63,7 @@
             pkgs.perl
             pkgs.prefetch-npm-deps
             pkgs.prek
+            pkgs.python3
             pkgs.ripgrep
             pkgs.shellcheck
             pkgs.statix

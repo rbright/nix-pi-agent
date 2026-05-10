@@ -1,2 +1,3 @@
 # Normalize line endings for all text files
 * text=auto eol=lf
+package-lock.patch -whitespace

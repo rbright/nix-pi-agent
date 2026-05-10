@@ -29,8 +29,24 @@ require_cmd() {
   fi
 }
 
+generate_lockfile_patch() {
+  local lockfile="$1"
+  local patch_file="$2"
+  local original_lockfile
+
+  original_lockfile="$(mktemp)"
+  cp "$lockfile" "$original_lockfile"
+  "${script_dir}/fill-package-lock-metadata.py" "$lockfile"
+
+  if diff -u --label a/package-lock.json --label b/package-lock.json "$original_lockfile" "$lockfile" > "$patch_file"; then
+    rm -f "$patch_file"
+  fi
+  rm -f "$original_lockfile"
+}
+
 version=""
 target_file="${script_dir}/../package.nix"
+lockfile_patch="${script_dir}/../package-lock.patch"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -63,6 +79,7 @@ require_cmd jq
 require_cmd nix
 require_cmd npm
 require_cmd perl
+require_cmd python3
 require_cmd tar
 
 if [[ ! -f "$target_file" ]]; then
@@ -109,6 +126,7 @@ if [[ -z "$lockfile" ]]; then
   echo "Could not find package-lock.json in fetched source archive" >&2
   exit 1
 fi
+generate_lockfile_patch "$lockfile" "$lockfile_patch"
 
 npm_deps_hash="$(
   nix --extra-experimental-features "nix-command flakes" \

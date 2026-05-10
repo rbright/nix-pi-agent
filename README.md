@@ -3,7 +3,7 @@
 [![CI](https://github.com/rbright/nix-pi-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/rbright/nix-pi-agent/actions/workflows/ci.yml)
 
 Standalone Nix flake packaging for `pi` (from
-[`badlogic/pi-mono`](https://github.com/badlogic/pi-mono)).
+[`earendil-works/pi`](https://github.com/earendil-works/pi)).
 
 ## What this repo provides
 
@@ -79,7 +79,7 @@ Check script usage:
 Workflow: `.github/workflows/update-pi-agent.yml`
 
 - Runs every 6 hours and on manual dispatch.
-- Detects the latest stable upstream tag from `badlogic/pi-mono`.
+- Detects the latest stable upstream tag from `earendil-works/pi`.
 - If newer than `package.nix`, runs `scripts/update-package.sh` and opens/updates a PR.
 - Enables auto-merge (`squash`) for that PR.
 

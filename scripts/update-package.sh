@@ -16,8 +16,8 @@ Examples:
 
 Environment overrides:
   PI_PACKAGE_NAME   npm package name (default: @mariozechner/pi-agent)
-  PI_REPO_OWNER     GitHub owner (default: badlogic)
-  PI_REPO_NAME      GitHub repo (default: pi-mono)
+  PI_REPO_OWNER     GitHub owner (default: earendil-works)
+  PI_REPO_NAME      GitHub repo (default: pi)
 EOF
 }
 
@@ -55,8 +55,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 package_name="${PI_PACKAGE_NAME:-@mariozechner/pi-agent}"
-repo_owner="${PI_REPO_OWNER:-badlogic}"
-repo_name="${PI_REPO_NAME:-pi-mono}"
+repo_owner="${PI_REPO_OWNER:-earendil-works}"
+repo_name="${PI_REPO_NAME:-pi}"
 
 require_cmd curl
 require_cmd jq

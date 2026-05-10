@@ -18,8 +18,8 @@ buildNpmPackage (finalAttrs: {
   nodejs = nodejs_22;
 
   src = fetchFromGitHub {
-    owner = "badlogic";
-    repo = "pi-mono";
+    owner = "earendil-works";
+    repo = "pi";
     rev = "v${finalAttrs.version}";
     hash = "sha256-oE4zMH5KEH185Vdp0CE221sa9rJJw35jFLlfhTa3Sg4=";
   };
@@ -57,7 +57,7 @@ buildNpmPackage (finalAttrs: {
 
   meta = {
     description = "Minimal terminal coding harness for agentic workflows";
-    homepage = "https://github.com/badlogic/pi-mono";
+    homepage = "https://github.com/earendil-works/pi";
     license = lib.licenses.mit;
     mainProgram = "pi";
     platforms = lib.platforms.linux ++ lib.platforms.darwin;

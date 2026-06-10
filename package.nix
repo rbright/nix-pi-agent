@@ -13,7 +13,7 @@
 }:
 buildNpmPackage (finalAttrs: {
   pname = "pi-agent";
-  version = "0.79.0";
+  version = "0.79.1";
 
   nodejs = nodejs_22;
 
@@ -21,10 +21,10 @@ buildNpmPackage (finalAttrs: {
     owner = "earendil-works";
     repo = "pi";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-mOgqwUdL6leyroHKfYHOEuEX+27pIZiaEvcGxlIj8NI=";
+    hash = "sha256-MvH8e21GVfzRQ9vsxFNC1GHJfB9GZpqY1Z2t8GCUaiQ=";
   };
 
-  npmDepsHash = "sha256-H+F/qzXilTXDHneKT3vms0MHi/E7+ahGh6zupFtMptU=";
+  npmDepsHash = "sha256-ZWdfDDs+Hv+GWTmsNmpWNlUDBOMALw7H4lwo7CJHVCM=";
   npmWorkspace = "packages/coding-agent";
   npmFlags = [ "--legacy-peer-deps" ];
   makeCacheWritable = true;

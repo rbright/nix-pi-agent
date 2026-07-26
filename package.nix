@@ -1,7 +1,7 @@
 {
   lib,
   buildNpmPackage,
-  fetchFromGitHub,
+  fetchzip,
   nodejs_22,
   pkg-config,
   cairo,
@@ -13,18 +13,16 @@
 }:
 buildNpmPackage (finalAttrs: {
   pname = "pi-agent";
-  version = "0.80.10";
+  version = "0.82.1";
 
   nodejs = nodejs_22;
 
-  src = fetchFromGitHub {
-    owner = "earendil-works";
-    repo = "pi";
-    rev = "v${finalAttrs.version}";
-    hash = "sha256-Vs/ndHYzFyfN4CjPV2zMYblLXe9IuM13UrPJI1VsZEQ=";
+  src = fetchzip {
+    url = "https://github.com/earendil-works/pi/releases/download/v${finalAttrs.version}/pi-${finalAttrs.version}-source.tar.gz";
+    hash = "sha256-h7DgnSj10WTS2TAM2hkNNC8dY6oqmnSeCg7+4wVbzzg=";
   };
 
-  npmDepsHash = "sha256-XGvDNH+eilsgc0Z7ITqbitB/9RVc+WuDfCcr1pibNqk=";
+  npmDepsHash = "sha256-5pHRwxpKg95/phOcYHeWdvPJNtSOhiw7PRoVxsuh0RM=";
   npmWorkspace = "packages/coding-agent";
   npmFlags = [ "--legacy-peer-deps" ];
   makeCacheWritable = true;

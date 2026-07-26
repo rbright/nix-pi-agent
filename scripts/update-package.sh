@@ -98,7 +98,7 @@ if [[ -z "$version" ]]; then
 fi
 
 tag="v${version}"
-source_url="https://github.com/${repo_owner}/${repo_name}/archive/${tag}.tar.gz"
+source_url="https://github.com/${repo_owner}/${repo_name}/releases/download/${tag}/pi-${version}-source.tar.gz"
 
 echo "Updating Pi package definition"
 echo "  package: ${package_name}"
@@ -139,7 +139,7 @@ if [[ ! "$npm_deps_hash" =~ ^sha256- ]]; then
 fi
 
 VERSION="$version" perl -0pi -e 's/(\n\s*version = )"[^"]+";/$1 . "\"" . $ENV{VERSION} . "\";"/e' "$target_file"
-SOURCE_HASH="$source_hash" perl -0pi -e 's/(src = fetchFromGitHub \{.*?\n\s*hash = )"sha256-[^"]+";/$1 . "\"" . $ENV{SOURCE_HASH} . "\";"/se' "$target_file"
+SOURCE_HASH="$source_hash" perl -0pi -e 's/(src = fetchzip \{.*?\n\s*hash = )"sha256-[^"]+";/$1 . "\"" . $ENV{SOURCE_HASH} . "\";"/se' "$target_file"
 NPM_DEPS_HASH="$npm_deps_hash" perl -0pi -e 's/(\n\s*npmDepsHash = )"sha256-[^"]+";/$1 . "\"" . $ENV{NPM_DEPS_HASH} . "\";"/e' "$target_file"
 
 echo "Updated: $target_file"

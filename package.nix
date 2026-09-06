@@ -13,16 +13,16 @@
 }:
 buildNpmPackage (finalAttrs: {
   pname = "pi-agent";
-  version = "0.84.4";
+  version = "0.85.1";
 
   nodejs = nodejs_22;
 
   src = fetchzip {
     url = "https://github.com/earendil-works/pi/releases/download/v${finalAttrs.version}/pi-${finalAttrs.version}-source.tar.gz";
-    hash = "sha256-6fIQMf5/xFXL//zkXIYcFDj/iW0vYTFu9aZIWk70+us=";
+    hash = "sha256-xMT9mCn9KIDyfKYzi8Esf2NV3UYtoL98dEuKXPlSSkU=";
   };
 
-  npmDepsHash = "sha256-35GC3Q4Jf4URvqoEYHeM63x49tTmrth62//PvKm4I7Q=";
+  npmDepsHash = "sha256-jzlsZIQzfl1FCZZ5//dHFWwMfBZQ4nRD6KB4HHifPqE=";
   npmWorkspace = "packages/coding-agent";
   npmFlags = [ "--legacy-peer-deps" ];
   makeCacheWritable = true;
@@ -39,6 +39,7 @@ buildNpmPackage (finalAttrs: {
   ];
 
   preBuild = ''
+    npx tsgo -p packages/chord/tsconfig.build.json
     npx tsgo -p packages/tui/tsconfig.build.json
     npx tsgo -p packages/telemetry/tsconfig.build.json
     npx tsgo -p packages/ai/tsconfig.build.json
@@ -51,7 +52,7 @@ buildNpmPackage (finalAttrs: {
     workspaceRoot="$out/lib/node_modules/pi-monorepo"
     mkdir -p "$workspaceRoot/packages"
 
-    cp -r packages/{ai,agent,client,protocol,telemetry,tui,coding-agent} "$workspaceRoot/packages/"
+    cp -r packages/{ai,agent,chord,client,protocol,telemetry,tui,coding-agent} "$workspaceRoot/packages/"
 
     # Keep required workspace links and drop only unresolved leftovers.
     find "$workspaceRoot/node_modules" -xtype l -delete

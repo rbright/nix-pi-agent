@@ -13,16 +13,16 @@
 }:
 buildNpmPackage (finalAttrs: {
   pname = "pi-agent";
-  version = "0.87.1";
+  version = "0.99.2";
 
   nodejs = nodejs_22;
 
   src = fetchzip {
     url = "https://github.com/earendil-works/pi/releases/download/v${finalAttrs.version}/pi-${finalAttrs.version}-source.tar.gz";
-    hash = "sha256-KXlSWaburxruZ46qWO6Dg3gNDrFahQNT7Ud7WyfoiKk=";
+    hash = "sha256-DR1VV9ckORK0LCU7cihmu1QK0GVx2ICrXHQWqFwDnXs=";
   };
 
-  npmDepsHash = "sha256-JBIYoP2vvRNz1HONNvDJ1U3c+nmCJ7/VgNthRTkrkIA=";
+  npmDepsHash = "sha256-eKghIpCAKawZm0Uf2iG6y1fz21Z5jNnMiAFJ5Quj3GI=";
   npmWorkspace = "packages/coding-agent";
   npmFlags = [ "--legacy-peer-deps" ];
   makeCacheWritable = true;
@@ -38,21 +38,23 @@ buildNpmPackage (finalAttrs: {
     pixman
   ];
 
+  # Upstream replaced tsgo with TypeScript 7 tsc. Build the workspace
+  # dependencies of coding-agent; ai uses build:offline to skip model fetches.
   preBuild = ''
-    npx tsgo -p packages/chord/tsconfig.build.json
-    npx tsgo -p packages/tui/tsconfig.build.json
-    npx tsgo -p packages/telemetry/tsconfig.build.json
-    npx tsgo -p packages/ai/tsconfig.build.json
-    npx tsgo -p packages/agent/tsconfig.build.json
-    npx tsgo -p packages/protocol/tsconfig.build.json
-    npx tsgo -p packages/client/tsconfig.build.json
+    npm run build --workspace=packages/chord
+    npm run build --workspace=packages/tui
+    npm run build --workspace=packages/telemetry
+    npm run build --workspace=packages/codemode
+    npm run build --workspace=packages/mcp
+    npm run build:offline --workspace=packages/ai
+    npm run build --workspace=packages/agent
   '';
 
   postInstall = ''
     workspaceRoot="$out/lib/node_modules/pi-monorepo"
     mkdir -p "$workspaceRoot/packages"
 
-    cp -r packages/{ai,agent,chord,client,protocol,telemetry,tui,coding-agent} "$workspaceRoot/packages/"
+    cp -r packages/{ai,agent,chord,codemode,mcp,telemetry,tui,coding-agent} "$workspaceRoot/packages/"
 
     # Keep required workspace links and drop only unresolved leftovers.
     find "$workspaceRoot/node_modules" -xtype l -delete

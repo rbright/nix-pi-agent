@@ -21,7 +21,7 @@ jobs:
     steps:
       # eMudhra CA compromise (https://emudhra.we-have-a-problem.com/): patch the
       # runner trust store before later steps use TLS. Remove this step and the
-      # job env once ubuntu-latest ships ca-certificates 20260816 or later and
+      # job env once ubuntu-latest ships patched ca-certificates (20260816ubuntu0.*) and
       # the runner's Node includes the fix.
       - name: Update CA trust store
         shell: bash
@@ -31,7 +31,8 @@ jobs:
           sudo apt-get install --only-upgrade --yes ca-certificates
           version="$(dpkg-query --showformat='${Version}' --show ca-certificates)"
           echo "ca-certificates ${version}"
-          dpkg --compare-versions "${version}" ge 20260816
+          # Plain 20260816 is the unpatched upstream baseline; require the Ubuntu fix.
+          dpkg --compare-versions "${version}" ge 20260816ubuntu0.22.04.1
 
       - name: Checkout
         uses: actions/checkout@v4

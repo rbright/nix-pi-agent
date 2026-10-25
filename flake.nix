@@ -3,18 +3,19 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    # eMudhra CA compromise (https://emudhra.we-have-a-problem.com/): the locked
-    # nixos-unstable does not have the patched Node.js 22.23.4. This master
-    # revision has it in cache.nixos.org. Only nodejs_22 comes from it. Remove
-    # this input once nixos-unstable has Node.js 22.23.4 or later.
-    nixpkgs-master.url = "github:NixOS/nixpkgs/75ba83324cc35b3e156ac46ee379f38e8f0b1808";
+
+    # nixpkgs unstable dropped Intel macOS in 26.11; keep that supported
+    # platform on the final stable branch that still receives security fixes.
+    # Drop x86_64-darwin and this input when nixpkgs 26.05 reaches end of life
+    # (end of 2026).
+    nixpkgs-darwin-x64.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
   outputs =
     {
       nixpkgs,
-      nixpkgs-master,
+      nixpkgs-darwin-x64,
       flake-utils,
       ...
     }:
@@ -29,17 +30,9 @@
     flake-utils.lib.eachSystem supportedSystems (
       system:
       let
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = (if system == "x86_64-darwin" then nixpkgs-darwin-x64 else nixpkgs).legacyPackages.${system};
 
-        # Nixpkgs master dropped x86_64-darwin, so that system keeps the
-        # nodejs_22 of the locked nixpkgs.
-        nodejs_22 =
-          if system == "x86_64-darwin" then
-            pkgs.nodejs_22
-          else
-            nixpkgs-master.legacyPackages.${system}.nodejs_22;
-
-        piAgent = pkgs.callPackage ./package.nix { inherit nodejs_22; };
+        piAgent = pkgs.callPackage ./package.nix { };
       in
       {
         packages = {
@@ -74,7 +67,7 @@
             pkgs.just
             pkgs.nix
             pkgs.nixfmt
-            nodejs_22
+            pkgs.nodejs_22
             pkgs.perl
             pkgs.prefetch-npm-deps
             pkgs.prek

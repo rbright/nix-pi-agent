@@ -59,6 +59,9 @@ just update 0.53.0
 - `src.hash`
 - `npmDepsHash`
 
+It also regenerates `package-lock.patch` when the upstream lockfile needs
+missing metadata, and removes the patch when it does not.
+
 ### Updater prerequisites
 
 - `curl`
@@ -66,6 +69,7 @@ just update 0.53.0
 - `nix`
 - `npm`
 - `perl`
+- `python3`
 - `tar`
 
 Check script usage:

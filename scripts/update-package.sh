@@ -32,16 +32,14 @@ require_cmd() {
 generate_lockfile_patch() {
   local lockfile="$1"
   local patch_file="$2"
-  local original_lockfile
+  local original_lockfile="${tmpdir}/package-lock.json.orig"
 
-  original_lockfile="$(mktemp)"
   cp "$lockfile" "$original_lockfile"
   "${script_dir}/fill-package-lock-metadata.py" "$lockfile"
 
   if diff -u --label a/package-lock.json --label b/package-lock.json "$original_lockfile" "$lockfile" > "$patch_file"; then
     rm -f "$patch_file"
   fi
-  rm -f "$original_lockfile"
 }
 
 version=""

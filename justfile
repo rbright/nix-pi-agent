@@ -3,7 +3,7 @@ set positional-arguments
 
 tooling_flake := "path:."
 
-# Shell prefix that loads tracked Nix files into "files" and exits when there are none.
+# Shell prefix that loads non-ignored Nix files into "files" and exits when there are none.
 with_nix_files := 'mapfile -t files < <(rg --files -g "*.nix"); if [[ "${#files[@]}" -eq 0 ]]; then exit 0; fi;'
 
 default:

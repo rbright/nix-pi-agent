@@ -13,16 +13,16 @@
 }:
 buildNpmPackage (finalAttrs: {
   pname = "pi-agent";
-  version = "1.4.0";
+  version = "1.5.0";
 
   nodejs = nodejs_22;
 
   src = fetchzip {
     url = "https://github.com/earendil-works/pi/releases/download/v${finalAttrs.version}/pi-${finalAttrs.version}-source.tar.gz";
-    hash = "sha256-1CKtkAEKJrPeHZ52nrDKyAhGV+iWitVO4fWjmG+skEk=";
+    hash = "sha256-gMvwOeia4gCp+jfS54As/pVImACmgJDLF5VWNSn0cjM=";
   };
 
-  npmDepsHash = "sha256-aBzVz78IxZQlzPYC72Ufa2YFtkow6nZR24YBYZrv9W0=";
+  npmDepsHash = "sha256-koVd02HEhEAOkcvIuUg4X1A6P6P0B+wJp4DJLwkH62w=";
   npmWorkspace = "packages/coding-agent";
   npmFlags = [ "--legacy-peer-deps" ];
   makeCacheWritable = true;
@@ -39,10 +39,11 @@ buildNpmPackage (finalAttrs: {
   ];
 
   # Upstream replaced tsgo with TypeScript 7 tsc. Build the workspace
-  # dependencies of coding-agent in upstream order; chord and ai import
-  # telemetry. ai uses build:offline to skip model fetches.
+  # dependencies of coding-agent in upstream order; chord, ai, and agent
+  # import schema and telemetry. ai uses build:offline to skip model fetches.
   preBuild = ''
     npm run build --workspace=packages/telemetry
+    npm run build --workspace=packages/schema
     npm run build --workspace=packages/chord
     npm run build --workspace=packages/tui
     npm run build --workspace=packages/codemode
@@ -55,7 +56,7 @@ buildNpmPackage (finalAttrs: {
     workspaceRoot="$out/lib/node_modules/pi-monorepo"
     mkdir -p "$workspaceRoot/packages"
 
-    cp -r packages/{ai,agent,chord,codemode,mcp,telemetry,tui,coding-agent} "$workspaceRoot/packages/"
+    cp -r packages/{ai,agent,chord,codemode,mcp,schema,telemetry,tui,coding-agent} "$workspaceRoot/packages/"
 
     # Keep required workspace links and drop only unresolved leftovers.
     find "$workspaceRoot/node_modules" -xtype l -delete

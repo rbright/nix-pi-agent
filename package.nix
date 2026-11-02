@@ -38,9 +38,9 @@ buildNpmPackage (finalAttrs: {
     pixman
   ];
 
-  # Upstream replaced tsgo with TypeScript 7 tsc. Build the workspace
-  # dependencies of coding-agent in upstream order; chord, ai, and agent
-  # import schema and telemetry. ai uses build:offline to skip model fetches.
+  # Build the workspace dependencies of coding-agent in upstream order; chord,
+  # ai, and agent import schema and telemetry. ai uses build:offline to skip
+  # model fetches.
   preBuild = ''
     npm run build --workspace=packages/telemetry
     npm run build --workspace=packages/schema

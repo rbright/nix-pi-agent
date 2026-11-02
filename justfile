@@ -3,16 +3,19 @@ set positional-arguments
 
 tooling_flake := "path:."
 
+# Shell prefix that loads tracked Nix files into "files" and exits when there are none.
+with_nix_files := 'mapfile -t files < <(rg --files -g "*.nix"); if [[ "${#files[@]}" -eq 0 ]]; then exit 0; fi;'
+
 default:
     @just --list
 
 # Format tracked Nix files.
 fmt:
-    nix develop '{{ tooling_flake }}' -c bash -euo pipefail -c 'mapfile -t files < <(rg --files -g "*.nix"); if [[ "${#files[@]}" -eq 0 ]]; then exit 0; fi; nixfmt "${files[@]}"'
+    nix develop '{{ tooling_flake }}' -c bash -euo pipefail -c '{{ with_nix_files }} nixfmt "${files[@]}"'
 
 # Check Nix formatting only.
 fmt-check:
-    nix develop '{{ tooling_flake }}' -c bash -euo pipefail -c 'mapfile -t files < <(rg --files -g "*.nix"); if [[ "${#files[@]}" -eq 0 ]]; then exit 0; fi; nixfmt --check "${files[@]}"'
+    nix develop '{{ tooling_flake }}' -c bash -euo pipefail -c '{{ with_nix_files }} nixfmt --check "${files[@]}"'
 
 # Run lint checks.
 lint: lint-nix lint-shell
@@ -21,8 +24,8 @@ lint: lint-nix lint-shell
 # Lint Nix configs (statix + deadnix + formatting check).
 lint-nix:
     nix develop '{{ tooling_flake }}' -c statix check .
-    nix develop '{{ tooling_flake }}' -c bash -euo pipefail -c 'mapfile -t files < <(rg --files -g "*.nix"); if [[ "${#files[@]}" -eq 0 ]]; then exit 0; fi; deadnix --fail --no-underscore "${files[@]}"'
-    nix develop '{{ tooling_flake }}' -c bash -euo pipefail -c 'mapfile -t files < <(rg --files -g "*.nix"); if [[ "${#files[@]}" -eq 0 ]]; then exit 0; fi; nixfmt --check "${files[@]}"'
+    nix develop '{{ tooling_flake }}' -c bash -euo pipefail -c '{{ with_nix_files }} deadnix --fail --no-underscore "${files[@]}"'
+    nix develop '{{ tooling_flake }}' -c bash -euo pipefail -c '{{ with_nix_files }} nixfmt --check "${files[@]}"'
 
 # Lint shell scripts.
 lint-shell:
@@ -38,8 +41,8 @@ run *args='--help':
 
 # Update version/hash pins in package.nix.
 update version="":
-    if [[ -n "{{ version }}" ]]; then \
-      ./scripts/update-package.sh --version "{{ version }}"; \
+    if [[ -n "$1" ]]; then \
+      ./scripts/update-package.sh --version "$1"; \
     else \
       ./scripts/update-package.sh; \
     fi

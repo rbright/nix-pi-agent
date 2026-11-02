@@ -32,8 +32,10 @@ require_cmd() {
 generate_lockfile_patch() {
   local lockfile="$1"
   local patch_file="$2"
-  local original_lockfile="${tmpdir}/package-lock.json.orig"
+  local original_lockfile
 
+  # mktemp creates the file exclusively, so an extracted archive entry cannot redirect the copy.
+  original_lockfile="$(mktemp "${tmpdir}/package-lock.json.orig.XXXXXX")"
   cp "$lockfile" "$original_lockfile"
   "${script_dir}/fill-package-lock-metadata.py" "$lockfile"
 

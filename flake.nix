@@ -33,6 +33,11 @@
         pkgs = (if system == "x86_64-darwin" then nixpkgs-darwin-x64 else nixpkgs).legacyPackages.${system};
 
         piAgent = pkgs.callPackage ./package.nix { };
+        piAgentApp = {
+          type = "app";
+          program = "${piAgent}/bin/pi";
+          meta.description = "Run pi-agent";
+        };
       in
       {
         packages = {
@@ -41,20 +46,8 @@
         };
 
         apps = {
-          pi-agent = {
-            type = "app";
-            program = "${piAgent}/bin/pi";
-            meta = {
-              description = "Run pi-agent";
-            };
-          };
-          default = {
-            type = "app";
-            program = "${piAgent}/bin/pi";
-            meta = {
-              description = "Run pi-agent";
-            };
-          };
+          pi-agent = piAgentApp;
+          default = piAgentApp;
         };
 
         devShells.default = pkgs.mkShell {

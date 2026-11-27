@@ -13,16 +13,16 @@
 }:
 buildNpmPackage (finalAttrs: {
   pname = "pi-agent";
-  version = "1.6.1";
+  version = "1.7.0";
 
   nodejs = nodejs_22;
 
   src = fetchzip {
     url = "https://github.com/earendil-works/pi/releases/download/v${finalAttrs.version}/pi-${finalAttrs.version}-source.tar.gz";
-    hash = "sha256-++mcfR+RgaRWFZKPmr4p5axzbMm2H5QUkHEupviMRQo=";
+    hash = "sha256-9fz0YHSCRSN2awvCYyXaObY+/2B/qG7kjE0uvs1dd44=";
   };
 
-  npmDepsHash = "sha256-WLez4/tAmJIQysd/0J6qHm64vo6zCgaaubrtcoVXBsk=";
+  npmDepsHash = "sha256-ca1P7AdtYPeJ77N9qjLXCav5ZwcNxrANm+qrybmdtiI=";
   npmWorkspace = "packages/coding-agent";
   npmFlags = [ "--legacy-peer-deps" ];
   makeCacheWritable = true;

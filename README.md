@@ -142,7 +142,7 @@ just check
       modules = [
         ({ pkgs, ... }: {
           environment.systemPackages = [
-            nixPiAgent.packages.${pkgs.system}.pi-agent
+            nixPiAgent.packages.${pkgs.stdenv.hostPlatform.system}.pi-agent
           ];
         })
       ];

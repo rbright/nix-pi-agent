@@ -3,13 +3,13 @@ set positional-arguments
 
 tooling_flake := "path:."
 
-# Shell prefix that loads non-ignored Nix files into "files" and exits when there are none.
+# Shell prefix that loads the Nix files that rg lists into "files" and exits when there are none.
 with_nix_files := 'mapfile -t files < <(rg --files -g "*.nix"); if [[ "${#files[@]}" -eq 0 ]]; then exit 0; fi;'
 
 default:
     @just --list
 
-# Format tracked Nix files.
+# Format the Nix files that rg lists.
 fmt:
     nix develop '{{ tooling_flake }}' -c bash -euo pipefail -c '{{ with_nix_files }} nixfmt "${files[@]}"'
 
